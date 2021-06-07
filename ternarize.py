@@ -31,8 +31,9 @@ def get_lines_in_block(index, lines):
     return string[start+1:last]
 
 def main():
-    compiled = replace_string
+    compiled = '!replace!'
     lines = []
+    bloat_type = "extreme"
     argv, argc = load_arguments()
     argv = ["123"]
     argv[0] = "test.js"
@@ -42,17 +43,17 @@ def main():
 
     nest_count = 0
     for index, line in enumerate(lines, 0):
-        if ("for" or "while" not in line) and line.count(';') > 1:
-            split_lines = line.split(';')
-        else:
-            split_lines = [line] 
-
+        split_lines = [line] 
         for expression in split_lines:
+            expression = expression.replace('\n', '')
+            expression = expression.strip()
+            if len(expression) == 0:
+                continue
             if expression.startswith("if"):
                 start = expression.index('(')
                 stack = 0
                 last = -1
-
+                #find inner conidtion in if ()
                 for i in range(start, len(expression)):
                     if expression[i] == "(":
                         stack += 1
@@ -62,24 +63,35 @@ def main():
                             last = i
                             break
                 
-                condition = line[start+1:last]
-                compiled = compiled.replace(replace_string, f'({condition} ?  (!replace!) : !alternative!), true ? (!next!) : 0')
+                condition = expression[start+1:last]
+                compiled = compiled.replace(replace_string, f'({condition} ?  (!replace!) : !alternative!), true ? (!next!) : 0') 
+                #set current stream and two points of stream regulators
                 nest_count += 1
-
                 continue
 
             elif expression.startswith("else"):
-                compiled = compiled.replace('!replace!', '!next!')
-                compiled = rreplace(compiled, '!alternative!', '!replace!', 1)
+                compiled = compiled.replace('!replace!', '!next!') #terminate all replaces
+                compiled = rreplace(compiled, '!alternative!', '!replace!', 1) #setup next replace and alterantive path
                 nest_count += 1
                 continue
-            
-            if nest_count == 1 and '}' in expression:
-                compiled = compiled.replace('!replace!', '0')
-                compiled = rreplace(compiled, '!next!', '!replace!', 1) #this wont work with nested expressions
-                nest_count = 0
+
+
+            if '}' in expression:
+                compiled = compiled.replace('!replace!', '0') #terminate current streams
+                compiled = rreplace(compiled, '!next!', '!replace!', nest_count) #set stream to nearest stream pointer 
+                #RREPLACE DOESNT WORK!
+                nest_count -= 1
                 continue
-                                
+
+
+            if expression.startswith("for"):
+                last = expression.index('{')
+                for_inner = expression[0:last]
+                compiled = compiled.replace('!replace!', f'true ? ((() => {{ {for_inner} {{ !replace! }} }})(), !next!) : 0')
+                nest_count += 1
+                continue
+
+                                    
             variable_keywords = ["const", "let" , "var"]
             stop = False
             for keyword in variable_keywords:
