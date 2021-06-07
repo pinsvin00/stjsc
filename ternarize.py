@@ -23,32 +23,12 @@ def find_all(a_str, sub):
 
 def process_keywords(line):
     variable_keywords = ["const", "let" , "var"]
-    occuranes = []
-    last = 0
-    found_any = False
-    for x in variable_keywords:
-        if line.find(x):
-            found_any = True
-    if not found_any:
-        return False
-    
-
-    # while True:
-    #     local = {}
-    #     for key in variable_keywords:
-    #         if line.find(key) != -1:
-    #             local[key] = line.find(key, last)
-    #     minimum = 10**10
-    #     for key in local:
-    #         minimum = min(local[key], minimum)
-    #     if minimum == 10*10:
-    #         break
-    #     else:
-    #         last = minimum
-
-
-        
-        
+    for keyword in variable_keywords:
+        if line.find(keyword):
+            variable_array.append(line)
+            return True
+    return False
+            
 
 def main():
 
@@ -61,10 +41,13 @@ def main():
     linear_ternarize = []
 
     for line in lines:
-        
-        if not process_keywords(line):
-            ter = ternarized(line.replace(";", ""))
-            compiled = compiled.replace(replace_string, ter)
+        if "for" or "while" not in line:
+            split_lines = line.split(';')
+        else: split_lines = [line] 
+        for expression in split_lines:
+            if not process_keywords(expression):
+                ter = ternarized(line.replace(";", ""))
+                compiled = compiled.replace(replace_string, ter)
 
     compiled = compiled.replace(replace_string, '0')
     with open("ternarized.js", "w") as output:
