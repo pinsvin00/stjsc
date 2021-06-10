@@ -12,9 +12,18 @@ def ternarized(line):
     global replace_string
     return f'true ? ({line}, {replace_string}) : 0'
 
-def rreplace(s, old, new, ocurrence):
-    li = s.split(old, ocurrence)
-    return new.join(li)
+def nth_repl(s, sub, repl, n):
+    find = s.rfind(sub)
+    i = find != -1
+    while find != -1 and i != n:
+        find = s.rfind(sub, 0 ,find + 1)
+        i += 1
+    if i == n:
+        a = s[:find]
+        b = s[find+len(sub):]
+        return a + repl + b
+    return s
+
 
 def get_lines_in_block(index, lines):
     string = ';'.join(lines[index:])
@@ -71,15 +80,14 @@ def main():
 
             elif expression.startswith("else"):
                 compiled = compiled.replace('!replace!', '!next!') #terminate all replaces
-                compiled = rreplace(compiled, '!alternative!', '!replace!', 1) #setup next replace and alterantive path
+                compiled = nth_repl(compiled, '!alternative!', '!replace!', 1) #setup next replace and alterantive path
                 nest_count += 1
                 continue
 
 
             if '}' in expression:
                 compiled = compiled.replace('!replace!', '0') #terminate current streams
-                compiled = rreplace(compiled, '!next!', '!replace!', nest_count) #set stream to nearest stream pointer 
-                #RREPLACE DOESNT WORK!
+                compiled = nth_repl(compiled, '!next!', '!replace!', nest_count) #set stream to nearest stream pointer
                 nest_count -= 1
                 continue
 
