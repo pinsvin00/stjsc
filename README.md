@@ -8,10 +8,10 @@ Notice that stjsc doesn't handle well weird code formatting. Please use prettier
 Download the script and do the following
 
 ```
-python ternarize.py file_name
+python ternarize.py input_file_name output_file_name
 ```
 
-The script will output ternarized code into ternarized.js file.
+If output file name won't be provided, program will write code to file ternarized.js
 
 
 ## Things that work in stjsc
@@ -31,5 +31,5 @@ Else if
 ## Things that won't work in stjsc
 Variable scoping, ternary expression prevents, creating variables inside a ternary expression. All variables in code are stored in global scope.
 
-Specific keywords like [continue, break ... ]
+Specific keywords like [continue, break ... ], although there are some workarounds, like one shown in erastotenes_sieve.js in examples.
 
