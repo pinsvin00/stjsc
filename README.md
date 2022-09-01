@@ -24,5 +24,7 @@ For statements
 Nesting the following lines into  
 
 ## Things that don't work in stjsc
-Functions
+Function keyword
+
 Else if
+
