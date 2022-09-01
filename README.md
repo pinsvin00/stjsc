@@ -16,8 +16,11 @@ The script will output ternarized code into ternarized.js file.
 
 ## Things that work in stjsc
 If statements
+
 Else statements
+
 For statements
+
 Nesting the following lines into  
 
 ## Things that don't work in stjsc
