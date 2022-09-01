@@ -28,3 +28,8 @@ Function keyword
 
 Else if
 
+## Things that won't work in stjsc
+Variable scoping, ternary expression prevents, creating variables inside a ternary expression. All variables in code are stored in global scope.
+
+Specific keywords like [continue, break ... ]
+
